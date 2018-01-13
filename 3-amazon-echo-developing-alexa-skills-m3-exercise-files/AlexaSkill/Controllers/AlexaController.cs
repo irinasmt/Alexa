@@ -48,11 +48,12 @@ namespace AlexaSkill.Controllers
 
         private AlexaResponse LaunchRequestHandler(Request request)
         {
-            var response = new AlexaResponse("Welcome to Plural sight. What would you like to hear, the Top Courses or New Courses?");
+            var response = new AlexaResponse("Hello, each week I ask 5 questions from dot net. Which level would you want the questions to be from: " +
+                "Beginner, Intermediate, Advanced");
             response.Session.MemberId = request.MemberId;
-            response.Response.Card.Title = "Pluralsight";
-            response.Response.Card.Content = "Hello\ncruel world!";
-            response.Response.Reprompt.OutputSpeech.Text = "Please pick one, Top Courses or New Courses?";
+            response.Response.Card.Title = "Dot Net";
+            response.Response.Card.Content = "Dot net start";
+            response.Response.Reprompt.OutputSpeech.Text = "Please pick one, Beginner, Intermediate, Advanced ? ";
             response.Response.ShouldEndSession = false;
 
             return response;
@@ -64,11 +65,14 @@ namespace AlexaSkill.Controllers
 
             switch (request.Intent)
             {
-                case "NewCoursesIntent":
-                    response = NewCoursesIntentHandler(request);
+                case "BeginnerIntent":
+                    response = GetNextQuestion(request, DficultyLevel.Beginner);
                     break;
-                case "TopCoursesIntent":
-                    response = TopCoursesIntentHandler(request);
+                case "IntermediateIntent":
+                    response = GetNextQuestion(request, DficultyLevel.Intermdiate);
+                    break;
+                case "AdvancedIntent":
+                    response = GetNextQuestion(request, DficultyLevel.Advanced);
                     break;
                 case "AMAZON.CancelIntent":
                 case "AMAZON.StopIntent":
@@ -89,61 +93,33 @@ namespace AlexaSkill.Controllers
             return response;
         }
 
+        private AlexaResponse GetNextQuestion(Request request, DficultyLevel level)
+        {
+            var response = new AlexaResponse("What is the difference between 1 and 2?",false);
+ 
+            response.Response.Directives.SlotToElicit = "Number";
+            response.Response.Directives.Type = "Dialog.ElicitSlot";
+            response.Response.Directives.UpdatedIntentAttributes.Name = request.Intent;
+            response.Response.Directives.UpdatedIntentAttributes.Slots = request.Slots;
+            return response;
+        }
+
         private AlexaResponse CancelOrStopIntentHandler(Request request)
         {
             return new AlexaResponse("Thanks for listening, let's talk again soon.", true);
         }
 
-        private AlexaResponse NewCoursesIntentHandler(Request request)
-        {
-            var output = new StringBuilder("Here are the latest courses. ");
-
-            using (var db = new alexademo2_dbEntities())
-            {
-                db.Courses.Take(10).OrderByDescending(c => c.DateCreated).ToList()
-                    .ForEach(c => output.AppendFormat("{0} by {1}. ", c.Title, c.Author));
-            }
-
-            return new AlexaResponse(output.ToString());
-        }
-
-        private AlexaResponse TopCoursesIntentHandler(Request request)
-        {
-            int limit = 10;
-            var criteria = string.Empty;
-
-            if (request.SlotsList.Any())
-            {
-                int maxLimit = 10;
-                var limitValue = request.SlotsList.FirstOrDefault(s => s.Key == "Limit").Value;
-
-                if (!string.IsNullOrWhiteSpace(limitValue) && int.TryParse(limitValue, out limit) && !(limit >= 1 && limit <= maxLimit))
-                {
-                    limit = maxLimit;
-                }
-
-                criteria = request.SlotsList.FirstOrDefault(s => s.Key == "Criteria").Value;
-            }
-
-            var output = new StringBuilder();
-            output.AppendFormat("Here are the top {0} {1}. ", limit, string.IsNullOrWhiteSpace(criteria) ? "courses" : criteria);
-
-            using (var db = new alexademo2_dbEntities())
-            {
-                if (criteria == "authors")
-                    db.Courses.Take(limit).OrderByDescending(c => c.Votes).ToList()
-                        .ForEach(c => output.AppendFormat("{0}. ", c.Author));
-                else
-                    db.Courses.Take(limit).OrderByDescending(c => c.Votes).ToList()
-                        .ForEach(c => output.AppendFormat("{0} by {1}. ", c.Title, c.Author));
-            }
-
-            return new AlexaResponse(output.ToString());
-        }
-
         private AlexaResponse SessionEndedRequestHandler(Request request)
         {
             return null;
+        }
+
+
+        enum DficultyLevel
+        {
+            Beginner,
+            Intermdiate,
+            Advanced
         }
     }
 }

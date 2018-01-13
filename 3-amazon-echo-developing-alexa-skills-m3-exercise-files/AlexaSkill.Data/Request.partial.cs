@@ -16,7 +16,7 @@ namespace AlexaSkill.Data
             set
             {
                 slotsList = value;
-
+                
                 var slots = new StringBuilder();
 
                 slotsList.ForEach(s => slots.AppendFormat("{0}|{1},", s.Key, s.Value));

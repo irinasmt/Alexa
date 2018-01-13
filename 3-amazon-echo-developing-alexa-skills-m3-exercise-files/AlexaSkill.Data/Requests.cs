@@ -7,23 +7,23 @@ namespace AlexaSkill.Data
     {
         public Request Create(Request request)
         {
-            using (var db = new alexademo2_dbEntities())
-            {
-                var member = db.Members.FirstOrDefault(m => m.AlexaUserId == request.UserId);
+            //using (var db = new alexademo2_dbEntities())
+            //{
+            //    var member = db.Members.FirstOrDefault(m => m.AlexaUserId == request.UserId);
 
-                if (member == null)
-                {
-                    request.Member = new Member() { AlexaUserId = request.UserId, CreatedDate = DateTime.UtcNow, LastRequestDate = DateTime.UtcNow, RequestCount = 1 };
+            //    if (member == null)
+            //    {
+            //        request.Member = new Member() { AlexaUserId = request.UserId, CreatedDate = DateTime.UtcNow, LastRequestDate = DateTime.UtcNow, RequestCount = 1 };
 
-                    db.Requests.Add(request);
-                }
-                else
-                {
-                    member.Requests.Add(request);
-                }
+            //        db.Requests.Add(request);
+            //    }
+            //    else
+            //    {
+            //        member.Requests.Add(request);
+            //    }
 
-                db.SaveChanges();
-            }
+            //    db.SaveChanges();
+            //}
 
             return request;
         }

@@ -1,5 +1,6 @@
 ﻿using System;
 using Newtonsoft.Json;
+using static AlexaSkill.Data.AlexaRequest.RequestAttributes;
 
 namespace AlexaSkill.Data
 {
@@ -74,12 +75,16 @@ namespace AlexaSkill.Data
             [JsonProperty("reprompt")]
             public RepromptAttributes Reprompt { get; set; }
 
+            [JsonProperty("directives")]
+            public DirectivesAttributes Directives { get; set; }
+
             public ResponseAttributes()
             {
                 ShouldEndSession = true;
                 OutputSpeech = new OutputSpeechAttributes();
                 Card = new CardAttributes();
                 Reprompt = new RepromptAttributes();
+                Directives = new DirectivesAttributes();
             }
 
             [JsonObject("outputSpeech")]
@@ -128,6 +133,26 @@ namespace AlexaSkill.Data
                 {
                     OutputSpeech = new OutputSpeechAttributes();
                 }
+            }
+
+           
+            public class DirectivesAttributes
+            {
+                public DirectivesAttributes()
+                {
+                    Type = null;
+                    SlotToElicit = null;
+                    UpdatedIntentAttributes = new IntentAttributes();
+                }
+
+                [JsonProperty("type")]
+                public string Type { get; set; }
+
+                [JsonProperty("slotToElicit")]
+                public string SlotToElicit { get; set; }
+
+                [JsonProperty("updatedIntent")]
+                public IntentAttributes UpdatedIntentAttributes { get; set; }
             }
         }
 
