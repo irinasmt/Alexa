@@ -1,8 +1,14 @@
 ﻿using AlexaSkill.Data;
+using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Web.Http;
+using static AlexaSkill.Data.AlexaRequest.RequestAttributes;
+using static AlexaSkill.Data.AlexaResponse.ResponseAttributes;
 
 namespace AlexaSkill.Controllers
 {
@@ -27,7 +33,7 @@ namespace AlexaSkill.Controllers
                 SlotsList = alexaRequest.Request.Intent.GetSlots(),
                 DateCreated = DateTime.UtcNow
             });
-
+            
             AlexaResponse response = null;
 
             switch (request.Type)
@@ -36,7 +42,7 @@ namespace AlexaSkill.Controllers
                     response = LaunchRequestHandler(request);
                     break;
                 case "IntentRequest":
-                    response = IntentRequestHandler(request);
+                    response = IntentRequestHandler(alexaRequest);
                     break;
                 case "SessionEndedRequest":
                     response = SessionEndedRequestHandler(request);
@@ -59,20 +65,20 @@ namespace AlexaSkill.Controllers
             return response;
         }
 
-        private AlexaResponse IntentRequestHandler(Request request)
+        private AlexaResponse IntentRequestHandler(AlexaRequest request)
         {
             AlexaResponse response = null;
 
-            switch (request.Intent)
+            switch (request.Request.Intent.Name)
             {
                 case "BeginnerIntent":
-                    response = GetNextQuestion(request, DficultyLevel.Beginner);
+                    response = GetNextQuestion(request, DifficultyLevel.Beginner);
                     break;
                 case "IntermediateIntent":
-                    response = GetNextQuestion(request, DficultyLevel.Intermdiate);
+                    response = GetNextQuestion(request, DifficultyLevel.Intermdiate);
                     break;
                 case "AdvancedIntent":
-                    response = GetNextQuestion(request, DficultyLevel.Advanced);
+                    response = GetNextQuestion(request, DifficultyLevel.Advanced);
                     break;
                 case "AMAZON.CancelIntent":
                 case "AMAZON.StopIntent":
@@ -86,25 +92,114 @@ namespace AlexaSkill.Controllers
             return response;
         }
 
-        private AlexaResponse HelpIntent(Request request)
+        private AlexaResponse HelpIntent(AlexaRequest request)
         {
             var response = new AlexaResponse("To use the Plural sight skill, you can say, Alexa, ask Plural sight for top courses, to retrieve the top courses or say, Alexa, ask Plural sight for the new courses, to retrieve the latest new courses. You can also say, Alexa, stop or Alexa, cancel, at any time to exit the Plural sight skill. For now, do you want to hear the Top Courses or New Courses?", false);
             response.Response.Reprompt.OutputSpeech.Text = "Please select one, top courses or new courses?";
             return response;
         }
 
-        private AlexaResponse GetNextQuestion(Request request, DficultyLevel level)
+        private AlexaResponse GetNextQuestion(AlexaRequest request, DifficultyLevel level)
         {
-            var response = new AlexaResponse("What is the difference between 1 and 2?",false);
- 
-            response.Response.Directives.SlotToElicit = "Number";
-            response.Response.Directives.Type = "Dialog.ElicitSlot";
-            response.Response.Directives.UpdatedIntentAttributes.Name = request.Intent;
-            response.Response.Directives.UpdatedIntentAttributes.Slots = request.Slots;
+            var questions = GetTheQuestionsForThisWeek(level);
+            AlexaResponse response = new AlexaResponse();
+            var slots = request.Request.Intent.GetSlots();
+           
+            if (UserJustStartedTheQuestions(request.Request.Intent))
+            {
+                var firstQuestion = questions.questions.First();
+                response.Response.OutputSpeech.Text = firstQuestion.text + firstQuestion.answers;
+                DirectivesAttributes directive = CreateDirective(request,"one");
+                response.Response.Directives.Add(directive);
+            }
+            else
+            {
+                var usersAnswer = slots[0].Value;
+                var questionsIndex = slots[0].Key.Remove(7);
+                if(IsTheAnswerCorrect(questions.questions, questionsIndex, usersAnswer))
+                {
+
+                }
+                else
+                {
+
+                }
+            }
+
+         
+            
             return response;
         }
 
-        private AlexaResponse CancelOrStopIntentHandler(Request request)
+        #region Helper Methods for Getting thw next question
+        private  DirectivesAttributes CreateDirective(AlexaRequest request, string slotNumber)
+        {
+            var directive = new DirectivesAttributes();
+            directive.SlotToElicit = "Question"+ slotNumber;
+            directive.Type = "Dialog.ElicitSlot";
+            directive.UpdatedIntentAttributes.Name = request.Request.Intent.Name;
+            directive.UpdatedIntentAttributes.Slots = request.Request.Intent.Slots;
+            return directive;
+        }
+
+        private bool UserJustStartedTheQuestions(IntentAttributes intent)
+        {
+            return intent.GetSlots().Count == 0;
+
+        }
+
+        private bool IsTheAnswerCorrect(List<Question> questions, string index, string usersAnswer)
+        {
+            return questions.First(x => x.index == index).correctAnswer == usersAnswer;
+
+        }
+
+        private string GetTheCorrectAnswer(List<Question> questions, string index)
+        {
+            return questions.First(x => x.index == index).correctAnswer;
+        }
+
+        private QuestionsPerWeek GetTheQuestionsForThisWeek(DifficultyLevel level)
+        {
+            RootObject listOfQuestions = DeserializeJson();
+            QuestionsPerWeek result = new QuestionsPerWeek();
+            switch (level)
+            {
+                case DifficultyLevel.Beginner:
+                    result = listOfQuestions.beginner
+                        .Where(x =>Convert.ToDateTime(x.startDate) <= DateTime.Now 
+                                && Convert.ToDateTime(x.endDate) >= DateTime.Now).First();
+                    break;
+                case DifficultyLevel.Intermdiate:
+                    result =  listOfQuestions.intermediate
+                       .Where(x => Convert.ToDateTime(x.startDate) <= DateTime.Now
+                               && Convert.ToDateTime(x.endDate) >= DateTime.Now).First();
+                    break;
+                case DifficultyLevel.Advanced:
+                    result= listOfQuestions.advanced
+                       .Where(x => Convert.ToDateTime(x.startDate) <= DateTime.Now
+                               && Convert.ToDateTime(x.endDate) >= DateTime.Now).First();
+                    break;
+            }
+            return result;
+        }
+        #endregion
+
+        private RootObject DeserializeJson()
+        {
+            RootObject items;
+            string path = @"D:\repos\Alexa\3-amazon-echo-developing-alexa-skills-m3-exercise-files\AlexaSkill\Scripts\Questions.json";
+
+            using (StreamReader r = File.OpenText(path))
+            {
+                string json = r.ReadToEnd();
+                items = JsonConvert.DeserializeObject<RootObject>(json);
+            }
+            return items;
+
+        }
+
+        private AlexaResponse CancelOrStopIntentHandler(AlexaRequest request)
         {
             return new AlexaResponse("Thanks for listening, let's talk again soon.", true);
         }
@@ -114,12 +209,12 @@ namespace AlexaSkill.Controllers
             return null;
         }
 
-
-        enum DficultyLevel
+        enum DifficultyLevel
         {
             Beginner,
             Intermdiate,
             Advanced
         }
+
     }
 }

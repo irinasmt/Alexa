@@ -297,6 +297,7 @@
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="SpeechAssets\IntentSchema.json" />
+    <Content Include="Scripts\Questions.json" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

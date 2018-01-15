@@ -1,6 +1,7 @@
 ﻿using System;
 using Newtonsoft.Json;
 using static AlexaSkill.Data.AlexaRequest.RequestAttributes;
+using System.Collections.Generic;
 
 namespace AlexaSkill.Data
 {
@@ -76,7 +77,7 @@ namespace AlexaSkill.Data
             public RepromptAttributes Reprompt { get; set; }
 
             [JsonProperty("directives")]
-            public DirectivesAttributes Directives { get; set; }
+            public List<DirectivesAttributes> Directives { get; set; }
 
             public ResponseAttributes()
             {
@@ -84,7 +85,7 @@ namespace AlexaSkill.Data
                 OutputSpeech = new OutputSpeechAttributes();
                 Card = new CardAttributes();
                 Reprompt = new RepromptAttributes();
-                Directives = new DirectivesAttributes();
+                Directives = new List<DirectivesAttributes>();
             }
 
             [JsonObject("outputSpeech")]
