@@ -108,20 +108,25 @@ namespace AlexaSkill.Controllers
             if (UserJustStartedTheQuestions(request.Request.Intent))
             {
                 var firstQuestion = questions.questions.First();
-                response.Response.OutputSpeech.Text = firstQuestion.text + firstQuestion.answers;
-                DirectivesAttributes directive = CreateDirective(request,"one");
-                response.Response.Directives.Add(directive);
-            }
+                GetTheNextQuestion(response, request, firstQuestion); 
+            } 
             else
             {
-                var usersAnswer = slots[0].Value;
-                var questionsIndex = slots[0].Key.Remove(7);
-                if(IsTheAnswerCorrect(questions.questions, questionsIndex, usersAnswer))
+                
+                var usersAnswer = slots.Last().Value;
+                var currentQuestionIndex = slots.Count-1 ;
+                if(IsTheAnswerCorrect(questions.questions, currentQuestionIndex, usersAnswer))
                 {
-
+                    GetTheNextQuestion(response, request, questions.questions[currentQuestionIndex + 1]);
                 }
                 else
                 {
+                    if(currentQuestionIndex==5)
+                    {
+                        response.Response.OutputSpeech.Text = GetTheCorrectAnswer(questions.questions[currentQuestionIndex]);
+                        response.Response.ShouldEndSession = true;
+                    }
+                    GetTheNextQuestion(response, request, questions.questions[currentQuestionIndex + 1], questions.questions[currentQuestionIndex]);
 
                 }
             }
@@ -130,9 +135,31 @@ namespace AlexaSkill.Controllers
             
             return response;
         }
+         
+        private void GetTheNextQuestion(AlexaResponse response, AlexaRequest request, Question question, Question tellTheCorrectAnswerForQuestion =null)
+        {
+            var theCorrectAnswer = GetTheCorrectAnswer(tellTheCorrectAnswerForQuestion);
+            response.Response.OutputSpeech.Text = theCorrectAnswer + question.text + question.answers;
+            response.Response.ShouldEndSession = false;
+            DirectivesAttributes directive = CreateDirectiveWithSlot(request, question.slotIdentifier);
+            response.Response.Directives.Add(directive);
+
+            //return response;
+        }
+
+        private  string GetTheCorrectAnswer(Question tellTheCorrectAnswerForQuestion)
+        {
+            var theCorrectAnswer="";
+            if (tellTheCorrectAnswerForQuestion != null)
+            {
+                theCorrectAnswer = "The correct answer is: " + tellTheCorrectAnswerForQuestion.correctAnswer;
+            }
+
+            return theCorrectAnswer;
+        }
 
         #region Helper Methods for Getting thw next question
-        private  DirectivesAttributes CreateDirective(AlexaRequest request, string slotNumber)
+        private  DirectivesAttributes CreateDirectiveWithSlot(AlexaRequest request, string slotNumber)
         {
             var directive = new DirectivesAttributes();
             directive.SlotToElicit = "Question"+ slotNumber;
@@ -148,15 +175,10 @@ namespace AlexaSkill.Controllers
 
         }
 
-        private bool IsTheAnswerCorrect(List<Question> questions, string index, string usersAnswer)
+        private bool IsTheAnswerCorrect(List<Question> questions, int index, string usersAnswer)
         {
-            return questions.First(x => x.index == index).correctAnswer == usersAnswer;
-
-        }
-
-        private string GetTheCorrectAnswer(List<Question> questions, string index)
-        {
-            return questions.First(x => x.index == index).correctAnswer;
+            return questions[index].correctAnswerIndex == usersAnswer;
+            
         }
 
         private QuestionsPerWeek GetTheQuestionsForThisWeek(DifficultyLevel level)

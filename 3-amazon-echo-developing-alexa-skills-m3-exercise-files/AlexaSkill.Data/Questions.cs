@@ -11,7 +11,7 @@ namespace AlexaSkill.Data
         public string answers { get; set; }
         public string correctAnswer { get; set; }
         public string correctAnswerIndex { get; set; }
-        public string index { get; set; }
+        public string slotIdentifier { get; set; }
         public string text { get; set; }
     }
 
