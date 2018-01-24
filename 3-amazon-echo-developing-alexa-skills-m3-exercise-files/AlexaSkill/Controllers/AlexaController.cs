@@ -104,50 +104,35 @@ namespace AlexaSkill.Controllers
             var questions = GetTheQuestionsForThisWeek(level);
             AlexaResponse response = new AlexaResponse();
             var slots = request.Request.Intent.GetSlots();
-           
+
             if (UserJustStartedTheQuestions(request.Request.Intent))
             {
-                var firstQuestion = questions.questions.First();
-                GetTheFirstQuestion(response, request, firstQuestion);
+                GetTheNextQuestion(response, request, questions.questions.First(), "");
             }
-            else if (UserIsAtTheLastQuestion(request.Request.Intent))
+            else
             {
-                int userInput = 0;
+                int userInput;
                 ValidateInput(request, questions.questions[4], response, slots, out userInput);
                 if (userInput == 0)
                 {
                     return response;
                 }
-                if (!IsTheAnswerCorrect(questions.questions, 4, userInput))
-                {
-                    response.Response.OutputSpeech.Ssml = "<speak>" + GetTheCorrectAnswer(questions.questions[4]);
-                }
+                var correctAnswerString = "";
 
-                response.Response.OutputSpeech.Ssml += "<break time='1s'/> Your total score is 5 out of 5. what a smart girl you are" + "</speak>";
-
-                response.Response.ShouldEndSession = true;
-
-            }
-            else
-            {
-                
-                var usersAnswer = slots.Last().Value;
-                var currentQuestionIndex = slots.Count-1 ;
-                int userInput = 0;
-                ValidateInput(request, questions.questions[currentQuestionIndex], response, slots, out userInput);
-                if(userInput==0)
+                if (UserIsAtTheLastQuestion(request.Request.Intent))
                 {
-                    return response;
-                }
-                if (IsTheAnswerCorrect(questions.questions, currentQuestionIndex, userInput))
-                {
-                    GetTheNextQuestion(response, request, questions.questions[currentQuestionIndex + 1]);
+                    correctAnswerString = GetTheCorrectAnswer(questions.questions[4], userInput.ToString());
+                    response.Response.OutputSpeech.Ssml += "<speak>"+correctAnswerString +"<break time='1s'/> Your total score is 5 out of 5. what a smart girl you are" + "</speak>";
+                    response.Response.ShouldEndSession = true;
+
                 }
                 else
-                {   
-                    GetTheNextQuestion(response, request, questions.questions[currentQuestionIndex + 1], questions.questions[currentQuestionIndex]);
-
+                {
+                    var currentQuestionIndex = slots.Count - 1;
+                    correctAnswerString = GetTheCorrectAnswer(questions.questions[currentQuestionIndex], userInput.ToString());
+                    GetTheNextQuestion(response, request, questions.questions[currentQuestionIndex + 1], correctAnswerString);
                 }
+
             }
             
             return response;
@@ -165,7 +150,7 @@ namespace AlexaSkill.Controllers
         private void TellUserToPickANumber(AlexaResponse response, AlexaRequest request, Question question, List<KeyValuePair<string, string>> slots)
         {
             response.Response.OutputSpeech.Text = "Please pick a number between from 1 to 4.";
-            response.Response.OutputSpeech.Type = "Text";
+            response.Response.OutputSpeech.Type = "TEXT";
             response.Response.ShouldEndSession = false;
             var o = (Newtonsoft.Json.Linq.JObject)JsonConvert.DeserializeObject(request.Request.Intent.Slots[slots.Last().Key].ToString());
             o.Property("value").Remove();
@@ -174,29 +159,19 @@ namespace AlexaSkill.Controllers
             response.Response.Directives.Add(directive);
         }
 
-        private void GetTheFirstQuestion(AlexaResponse response, AlexaRequest request, Question question)
-        {   
-            response.Response.OutputSpeech.Ssml = "<speak>" + question.text + "<break time='1s'/>" + question.answers + "</speak>";
-            response.Response.OutputSpeech.Type = "SSML";
-            response.Response.ShouldEndSession = false;
-            DirectivesAttributes directive = CreateDirectiveWithSlot(request, question.slotIdentifier);
-            response.Response.Directives.Add(directive);
-        }
-
-        private void GetTheNextQuestion(AlexaResponse response, AlexaRequest request, Question question, Question tellTheCorrectAnswerForQuestion =null)
+        private void GetTheNextQuestion(AlexaResponse response, AlexaRequest request, Question question, string correctAnswerForPreviousQuestion)
         {
-            var theCorrectAnswer = GetTheCorrectAnswer(tellTheCorrectAnswerForQuestion);
-            response.Response.OutputSpeech.Ssml = "<speak><emphasis level=\"moderate\">" + theCorrectAnswer + "</emphasis><break time='1s'/> The next question is <break time='1s'/>" + question.text + "<break time='1s'/>" + question.answers +"</speak>";
+            response.Response.OutputSpeech.Ssml = "<speak><emphasis level=\"moderate\">" + correctAnswerForPreviousQuestion + "</emphasis><break time='1s'/> The next question is <break time='1s'/>" + question.text + "<break time='1s'/>" + question.answers +"</speak>";
             response.Response.OutputSpeech.Type = "SSML";
             response.Response.ShouldEndSession = false;
             DirectivesAttributes directive = CreateDirectiveWithSlot(request, question.slotIdentifier);
             response.Response.Directives.Add(directive);
         }
 
-        private  string GetTheCorrectAnswer(Question question)
+        private  string GetTheCorrectAnswer(Question question, string usersAnswer)
         {
             var theCorrectAnswer="";
-            if (question != null)
+            if (question != null && question.correctAnswerIndex == usersAnswer)
             {
                 theCorrectAnswer = "The correct answer is: " + question.correctAnswer ;
             }
@@ -218,19 +193,11 @@ namespace AlexaSkill.Controllers
         private bool UserJustStartedTheQuestions(IntentAttributes intent)
         {
             return intent.GetSlots().Count == 0;
-
         }
 
         private bool UserIsAtTheLastQuestion(IntentAttributes intent)
         {
             return intent.GetSlots().Count == 5;
-
-        }
-
-        private bool IsTheAnswerCorrect(List<Question> questions, int index, int usersAnswer)
-        {
-            return questions[index].correctAnswerIndex == usersAnswer.ToString();
-            
         }
 
         private QuestionsPerWeek GetTheQuestionsForThisWeek(DifficultyLevel level)
