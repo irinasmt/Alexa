@@ -102,7 +102,7 @@ namespace AlexaSkill.Data
 
                 public OutputSpeechAttributes()
                 {
-                    Type = "PlainText";
+                    Type = "SSML";
                 }
             }
 
