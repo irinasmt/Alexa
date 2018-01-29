@@ -9,3 +9,4 @@ D:\repos\Alexa\3-amazon-echo-developing-alexa-skills-m3-exercise-files\AlexaSkil
 D:\repos\Alexa\3-amazon-echo-developing-alexa-skills-m3-exercise-files\AlexaSkill.Data\bin\Debug\Newtonsoft.Json.xml
 D:\repos\Alexa\3-amazon-echo-developing-alexa-skills-m3-exercise-files\AlexaSkill.Data\obj\Debug\AlexaSkill.Data.dll
 D:\repos\Alexa\3-amazon-echo-developing-alexa-skills-m3-exercise-files\AlexaSkill.Data\obj\Debug\AlexaSkill.Data.pdb
+D:\repos\Alexa\3-amazon-echo-developing-alexa-skills-m3-exercise-files\AlexaSkill.Data\obj\Debug\AlexaSkill.Data.csprojResolveAssemblyReference.cache

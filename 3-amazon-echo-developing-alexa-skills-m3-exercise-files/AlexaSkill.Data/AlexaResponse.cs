@@ -27,14 +27,12 @@ namespace AlexaSkill.Data
         public AlexaResponse(string outputSpeechText)
             : this()
         {
-            Response.OutputSpeech.Text = outputSpeechText;
             Response.Card.Content = outputSpeechText;
         }
 
         public AlexaResponse(string outputSpeechText, bool shouldEndSession)
             : this()
         {
-            Response.OutputSpeech.Text = outputSpeechText;
             Response.ShouldEndSession = shouldEndSession;
 
             if (shouldEndSession)
@@ -50,7 +48,6 @@ namespace AlexaSkill.Data
         public AlexaResponse(string outputSpeechText, string cardContent)
             : this()
         {
-            Response.OutputSpeech.Text = outputSpeechText;
             Response.Card.Content = cardContent;
         }
 
@@ -121,6 +118,7 @@ namespace AlexaSkill.Data
                 public CardAttributes()
                 {
                     Type = "Simple";
+                    Title = "C# test. Another week another quesion.";
                 }
             }
 

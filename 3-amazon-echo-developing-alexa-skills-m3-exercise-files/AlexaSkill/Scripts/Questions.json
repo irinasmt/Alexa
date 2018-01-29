@@ -39,8 +39,8 @@
           "slotIdentifier": "Five"
         }
       ],
-      "startDate": "14/01/2018",
-      "endDate": "25/01/2018"
+      "startDate": "29/01/2018",
+      "endDate": "04/02/2018"
     },
     {
       "questions": [
@@ -81,8 +81,8 @@
           "slotIdentifier": "Five"
         }
       ],
-      "startDate": "14/01/2018",
-      "endDate": "15/01/2018"
+      "startDate": "05/02/2018",
+      "endDate": "11/02/2018"
     },
     {
       "questions": [
@@ -123,8 +123,8 @@
           "slotIdentifier": "Five"
         }
       ],
-      "startDate": "14/01/2018",
-      "endDate": "21/01/2018"
+      "startDate": "12/02/2018",
+      "endDate": "18/02/2018"
     }
   ],
   "advanced": [
@@ -226,95 +226,127 @@
     {
       "questions": [
         {
-          "answers": "1 2 3",
-          "correctAnswer": "2",
-          "text": "ana are mere"
+          "answers": "1 <break time='1s'/>Everything you use in C sharp is an object, including Windows Forms and controls. 2 <break time='1s'/>Objects have methods and events that allow them to perform actions. 3 <break time='1s'/>All objects created from a class will occupy equal number of bytes in memory.4 <break time='1s'/>All of the mentioned",
+          "correctAnswer": "All of the mentioned",
+          "correctAnswerIndex": "1",
+          "text": "Which of following statements about objects in C sharp is correct <break time='1s'/>",
+          "slotIdentifier": "One"
         },
         {
-          "answers": "1 2 3",
-          "correctAnswer": "2",
-          "text": "ana are mere"
+          "answers": "1<break time='1s'/>protected, public. 2<break time='1s'/>private, public. 3<break time='1s'/>private. 4<break time='1s'/>public",
+          "correctAnswer": "private",
+          "correctAnswerIndex": "3",
+          "text": "Which data members a class has by default.",
+          "slotIdentifier": "Two"
         },
         {
-          "answers": "1 2 3",
-          "correctAnswer": "2",
-          "text": "ana are mere"
+          "answers": "1<break time='1s'/>References can be called recursively. 2<break time='1s'/>The ref keyword causes arguments to be passed by reference. 3<break time='1s'/>When ref are used, any changes made to parameters in method will be reflected in variable when control is passed back to calling method. 4<break time='1s'/>All of above mentioned",
+          "correctAnswer": "References can be called recursively.",
+          "correctAnswerIndex": "1",
+          "text": "Which one is the wrong statement about ref keyword in C sharp",
+          "slotIdentifier": "Three"
         },
         {
-          "answers": "1 2 3",
-          "correctAnswer": "2",
-          "text": "ana are mere"
+          "answers": "1<break time='1s'/>1. 2<break time='1s'/>2 .3<break time='1s'/>Any number 4<break time='1s'/>None of the mentioned",
+          "correctAnswer": "Any number. A constructor is a simple method which has the same name as the class and hence used to create object of a class. C# class can define any number of constructors. Every class contains a default constructor.",
+          "correctAnswerIndex": "3",
+          "text": "What number of constructors a class can define  ",
+          "slotIdentifier": "Four"
         },
         {
-          "answers": "1 2 3",
-          "correctAnswer": "2",
-          "text": "ana are mere"
+          "answers": "1<break time='1s'/>Constructors can be overloaded. 2<break time='1s'/>Constructors are never called explicitly .3<break time='1s'/>Constructors have same name as name of the class 4<break time='1s'/>All of the mentioned",
+          "correctAnswer": "All of the mentioned",
+          "correctAnswerIndex": "4",
+          "text": "What is the correct statement about constructors in C sharp dot net",
+          "slotIdentifier": "Five"
         }
       ],
-      "startDate": "14/01/2018",
-      "endDate": "21/01/2018"
+      "startDate": "29/01/2018",
+      "endDate": "04/02/2018"
     },
     {
       "questions": [
         {
-          "answers": "1 2 3",
-          "correctAnswer": "2",
-          "text": "ana are mere"
+
+          "answers": "1 <break time='1s'/> To create string on stack. 2<break time='1s'/> To reduce size of string. 3<break time='1s'/> To overcome problem of stackoverflow. 4<break time='1s'/> None of the mentioned",
+          "correctAnswer": "To reduce size of string.  The problem of stack overflow very likely to occur since transport protocol used on web these days are ‘HTTP’ and data standard as XML. Hence, both make use of strings extensively which will result in stack overflow problem. So, to avoid this situation it is good idea to make strings a reference type and hence create it on heap.",
+          "correctAnswerIndex": "2",
+          "text": "Why strings are of reference type in C sharp .NET <break time='1s'/>",
+          "slotIdentifier": "One"
         },
         {
-          "answers": "1 2 3",
-          "correctAnswer": "2",
-          "text": "ana are mere"
+          "answers": "1<break time='1s'/>Var is introduced in C sharp 3.0 and Dynamic is introduced in C sharp 4.0. 2<break time='1s'/> Var is a type of variable where declaration is done at compile time by compiler while Dynamic declaration is achieved at runtime by compiler. 3<break time='1s'/> For Var Error is caught at compile time and for Dynamic Error is caught at runtime. 4<break time='1s'/> All of the mentioned",
+          "correctAnswer": "All of the mentioned",
+          "correctAnswerIndex": "1",
+          "text": "what is the DIFFERENCE BETWEEN KEYWORDS VAR AND DYNAMIC. ",
+          "slotIdentifier": "Two"
         },
         {
-          "answers": "1 2 3",
-          "correctAnswer": "2",
-          "text": "ana are mere"
+          "answers": "1<break time='1s'/> Boxing is the process of converting a value type to the reference type and Unboxing is the process of converting reference to value type. 2<break time='1s'/> Boxing is the process of converting a reference type to value type and Unboxing is the process of converting value type to reference type. 3<break time='1s'/> In Boxing we need explicit conversion and in Unboxing we need implicit conversion. 4<break time='1s'/> Both Boxing and Unboxing we need implicit conversion",
+          "correctAnswer": "Boxing is the process of converting a value type to the reference type and Unboxing is the process of converting reference to value type",
+          "correctAnswerIndex": "1",
+          "text": "What is the difference between Boxing and Unboxing. ",
+          "slotIdentifier": "Three"
         },
         {
-          "answers": "1 2 3",
-          "correctAnswer": "2",
-          "text": "ana are mere"
+          "answers": "1<break time='1s'/> Implicit Conversion. 2<break time='1s'/> Explicit Conversion. 3<break time='1s'/> Implicit Conversion and Explicit Conversion. 4<break time='1s'/> None of the mentioned.",
+          "correctAnswer": "Explicit Conversion",
+          "correctAnswerIndex": "2",
+          "text": "what Types of Data Conversion are in C sharp. ",
+          "slotIdentifier": "Four"
         },
         {
-          "answers": "1 2 3",
-          "correctAnswer": "2",
-          "text": "ana are mere"
+          "answers": "1<break time='1s'/> To store a value of one data type into a variable of another data type. 2<break time='1s'/> To get desired data. 3<break time='1s'/> To prevent situations of run time error during change or conversion of data type. 4<break time='1s'/> None of the mentioned.",
+          "correctAnswer": " To prevent situations of run time error during change or conversion of data type.",
+          "correctAnswerIndex": "3",
+          "text": "What is the need for Conversion of data type in C sharp.",
+          "slotIdentifier": "Five"
         }
       ],
-      "startDate": "14/01/2018",
-      "endDate": "21/01/2018"
+      "startDate": "05/02/2018",
+      "endDate": "11/02/2018"
     },
     {
       "questions": [
         {
-          "answers": "1 2 3",
-          "correctAnswer": "2",
-          "text": "ana are mere"
+
+          "answers": "1<break time='1s'/> u short to long. 2<break time='1s'/> int to u int. 3<break time='1s'/> u short to long. 4<break time='1s'/> byte to decimal",
+          "correctAnswer": "int to u int. int is 32 bit signed integer whereas u int is 32 bit unsigned integer .Range of int is larger than u int. So, compiler cannot implicitly convert from larger datatype to smaller datatype.",
+          "correctAnswerIndex": "2",
+          "text": "in which Type of Conversion the compiler is unable to convert the datatype implicitly. ",
+          "slotIdentifier": "One"
         },
         {
-          "answers": "1 2 3",
-          "correctAnswer": "2",
-          "text": "ana are mere"
+          "answers": "1<break time='1s'/> Makes program memory heavier. 2<break time='1s'/> Results in loss of data. 3<break time='1s'/> Potentially Unsafe. 4<break time='1s'/> None of the mentioned",
+          "correctAnswer": "Results in loss of data",
+          "correctAnswerIndex": "2",
+          "text": "what are the Disadvantages of Explicit Conversion. ",
+          "slotIdentifier": "Two"
         },
         {
-          "answers": "1 2 3",
-          "correctAnswer": "2",
-          "text": "ana are mere"
+          "answers": "1<break time='1s'/> Everything you use in C sharp is an object, including Windows Forms and controls. 2<break time='1s'/> Objects have methods and events that allow them to perform actions. 3<break time='1s'/> All objects created from a class will occupy equal number of bytes in memory. 4<break time='1s'/> All of the mentioned. ",
+          "correctAnswer": "All of the mentioned",
+          "correctAnswerIndex": "4",
+          "text": "Which of following statements about objects in C sharp is correct.",
+          "slotIdentifier": "Three"
         },
         {
-          "answers": "1 2 3",
-          "correctAnswer": "2",
-          "text": "ana are mere"
+          "answers": "1<break time='1s'/> protected, public. 2<break time='1s'/> private, public. 3<break time='1s'/> private. 4<break time='1s'/> public.",
+          "correctAnswer": "private",
+          "correctAnswerIndex": "3",
+          "text": "The data members of a class by default are.",
+          "slotIdentifier": "Four"
         },
         {
-          "answers": "1 2 3",
-          "correctAnswer": "2",
-          "text": "ana are mere"
+          "answers": "1<break time='1s'/> and sign. 2<break time='1s'/> ref.  3<break time='1s'/> hash sign. 4<break time='1s'/> dollar sign.",
+          "correctAnswer": "ref",
+          "correctAnswerIndex": "2",
+          "text": "Which refrence modifier is used to define reference variable.",
+          "slotIdentifier": "Five"
         }
       ],
-      "startDate": "14/01/2018",
-      "endDate": "21/01/2018"
+      "startDate": "12/02/2018",
+      "endDate": "18/02/2018"
     }
   ]
 }
