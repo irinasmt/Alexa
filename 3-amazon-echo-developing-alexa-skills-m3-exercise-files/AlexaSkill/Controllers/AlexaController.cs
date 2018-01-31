@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -23,6 +24,12 @@ namespace AlexaSkill.Controllers
         public dynamic Pluralsight(AlexaRequest alexaRequest)
         {
             if (alexaRequest.Session.Application.ApplicationId != ApplicationID)
+            {
+                throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.BadRequest));
+            }
+
+            var totalSecons = (DateTime.UtcNow - alexaRequest.Request.Timestamp).TotalSeconds;
+            if (totalSecons < 0 || totalSecons > 150)
             {
                 throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.BadRequest));
             }
@@ -65,10 +72,12 @@ namespace AlexaSkill.Controllers
         private AlexaResponse LaunchRequestHandler(Request request)
         {
             AlexaResponse response = new AlexaResponse();
-            response.Response.OutputSpeech.Ssml = "<speak>Hello, each week I ask 5 questions from dot net. Which level would you want the questions to be from: " +
-                "Beginner, Intermediate, Advanced</speak>";              
+            response.Response.OutputSpeech.Ssml = "<speak>Hello, each week I ask 5 questions from C Sharp. Which level would you want the questions to be from: " +
+                "Beginner, Intermediate</speak>";
+            response.Response.OutputSpeech.Type = "SSML";
             response.Session.MemberId = request.MemberId;
-            response.Response.Card.Content = "Each week Alexa asks 5 new quesions. Just say: 'Alexa start C sharp question' and then pick a category from beginner and inetermediate.";
+            response.Response.Reprompt.OutputSpeech.Ssml = "<speak>Please select one, beginner or intermediate?</speak>";
+            response.Response.Card.Content = "Each week Alexa asks 5 new quesions. Just say: 'Alexa, start C Sharp Test' and then pick a category from beginner and inetermediate.";
             response.Response.ShouldEndSession = false;
 
             return response;
@@ -103,8 +112,11 @@ namespace AlexaSkill.Controllers
 
         private AlexaResponse HelpIntent(AlexaRequest request)
         {
-            var response = new AlexaResponse("To use the Plural sight skill, you can say, Alexa, ask Plural sight for top courses, to retrieve the top courses or say, Alexa, ask Plural sight for the new courses, to retrieve the latest new courses. You can also say, Alexa, stop or Alexa, cancel, at any time to exit the Plural sight skill. For now, do you want to hear the Top Courses or New Courses?", false);
-            response.Response.Reprompt.OutputSpeech.Ssml = "Please select one, top courses or new courses?";
+            AlexaResponse response = new AlexaResponse(); 
+            response.Response.Card.Content = "Each week Alexa asks 5 new quesions. Just say: 'Alexa start C sharp question' and then pick a category from beginner and inetermediate.";
+            response.Response.ShouldEndSession = false;
+            response.Response.OutputSpeech.Type = "SSML";
+            response.Response.OutputSpeech.Ssml = "<speak>To use the C sharp test skill, you can say, Alexa, ask C sharp test for beginner, or you can say, Alexa, ask C sharp test for intermmediate. To repeat a question you can say, repeat. You can also say, Alexa, stop or Alexa, cancel, at any time to exit the c sharp test skill. For now, which one do you want to hear, beginner or intermediate questions?</speak>";
             return response;
         }
 
@@ -112,7 +124,6 @@ namespace AlexaSkill.Controllers
         {
             var questions = GetTheQuestionsForThisWeek(level);
             AlexaResponse response = new AlexaResponse();
-            var slots = request.Request.Intent.GetSlots();
 
             if (UserJustStartedTheQuestions(request.Request.Intent))
             {
@@ -121,28 +132,42 @@ namespace AlexaSkill.Controllers
             }
             else
             {
+                var slots = request.Request.Intent.GetSlots();
+                var currentQuestion = slots.Last().Key;
+                QuestionsIndexEnum questionEnum = (QuestionsIndexEnum)Enum.Parse(typeof(QuestionsIndexEnum), currentQuestion);
+                var currentQuestionIndex = (int)questionEnum;
                 int userInput;
-                ValidateInput(request, questions.questions[slots.Count-1], response, slots, out userInput);
-                if (!string.IsNullOrEmpty(response.Response.OutputSpeech.Ssml))
+                 var userString =slots.Last().Value;
+                if (userString == "repeat" || userString == "replay")
                 {
-                    return response;
-                }
-                var correctAnswerString = "";
-                var currentQuestionIndex = slots.Count - 1;
-                correctAnswerString = GetTheCorrectAnswer(questions.questions[currentQuestionIndex], userInput.ToString());
-
-                if (UserIsAtTheLastQuestion(request.Request.Intent))
-                {
-                    var score = GetScore(questions.questions, slots);
-                    response.Response.OutputSpeech.Ssml += "<speak>"+correctAnswerString +"<break time='1s'/> Your total score is "+ score+" out of 5. Geek" + "</speak>";
-                    response.Response.OutputSpeech.Type = "SSML";
-                    response.Response.ShouldEndSession = true;
-
+                    GetTheNextQuestion(response, request, questions.questions[currentQuestionIndex], "", "");
                 }
                 else
                 {
-                     GetTheNextQuestion(response, request, questions.questions[currentQuestionIndex + 1], correctAnswerString, " <break time='1s'/>The next question is<break time='1s'/>");
+                    ValidateInput(request, questions.questions[currentQuestionIndex], response, slots, out userInput, currentQuestionIndex);
+                    if (!string.IsNullOrEmpty(response.Response.OutputSpeech.Ssml))
+                    {
+                        return response;
+                    }
+                    var correctAnswerString = "";
+                   
+                    correctAnswerString = GetTheCorrectAnswer(questions.questions[currentQuestionIndex], userInput.ToString());
+
+                    if (UserIsAtTheLastQuestion(request.Request.Intent))
+                    {
+                        var score = GetScore(questions.questions, slots);
+                        response.Response.OutputSpeech.Ssml += "<speak>" + correctAnswerString + "<break time='1s'/> Your total score is " + score + " out of 5. Geek" + "</speak>";
+                        response.Response.OutputSpeech.Type = "SSML";
+                        response.Response.ShouldEndSession = true;
+
+                    }
+                    else
+                    {
+                        GetTheNextQuestion(response, request, questions.questions[currentQuestionIndex + 1], correctAnswerString, " <break time='1s'/>The next question is<break time='1s'/>");
+                    }
+
                 }
+               
 
                 CreateCardContent(questions.questions[currentQuestionIndex], response);
 
@@ -153,10 +178,9 @@ namespace AlexaSkill.Controllers
 
         private void CreateCardContent(Question question, AlexaResponse response)
         {
-            response.Response.Card.Content = "Question: " + question.text + "\n Please choose from: " + 
-                question.answers.Replace("<break time='1s'/>", "").Replace(".", "\n") + 
-                "Correct answer: " + question.correctAnswer ;
-
+            response.Response.Card.Content = "Question: " + question.text.Replace("<break time='1s'/>", " ") + "\n Please choose from: \n" + 
+                question.answers.Replace("<break time='1s'/>", " ").Replace(".", "\n") + 
+                "\n Correct answer: " + question.correctAnswer ;
         }
 
         private int GetScore(List<Question> questions, List<KeyValuePair<string, string>> slots)
@@ -168,10 +192,10 @@ namespace AlexaSkill.Controllers
 
         }
 
-        private void ValidateInput(AlexaRequest request, Question question, AlexaResponse response, List<KeyValuePair<string, string>> slots, out int userInput)
+        private void ValidateInput(AlexaRequest request, Question question, AlexaResponse response, List<KeyValuePair<string, string>> slots, out int userInput, int index)
         {  
-            Int32.TryParse(slots.Last().Value, out userInput);
-            if (userInput == 0 || userInput<0 || userInput >4)
+            Int32.TryParse(slots[slots.Count()-1].Value, out userInput);
+            if (userInput< 1 || userInput > 4)
             {
                 TellUserToPickANumber(response, request, question, slots);
             }
@@ -208,7 +232,7 @@ namespace AlexaSkill.Controllers
             var theCorrectAnswer="";
             if (question != null)
             {
-                if(question.correctAnswerIndex == usersAnswer)
+                if(question.correctAnswerIndex != usersAnswer)
                 {
                     theCorrectAnswer = "The correct answer is: " + question.correctAnswer;
                 }
@@ -254,25 +278,27 @@ namespace AlexaSkill.Controllers
                 case DifficultyLevel.Intermdiate:
                     result = QuestionsPerWeek(listOfQuestions.intermediate);
                     break;
-                case DifficultyLevel.Advanced:
-                    result = QuestionsPerWeek(listOfQuestions.advanced);
-                    break;
+                //case DifficultyLevel.Advanced:
+                //    result = QuestionsPerWeek(listOfQuestions.advanced);
+                //    break;
             }
             return result;
         }
 
         private static QuestionsPerWeek QuestionsPerWeek(List<QuestionsPerWeek> listOfQuestions)
         {
+            CultureInfo provider = CultureInfo.InvariantCulture;
+            string format = "dd/MM/yyyy";
             return listOfQuestions
-                                    .Where(x => Convert.ToDateTime(x.startDate).Date <= DateTime.Now.Date
-                                            && Convert.ToDateTime(x.endDate).Date >= DateTime.Now.Date).First();
+                                    .Where(x => DateTime.ParseExact(x.startDate, format, provider).Date <= DateTime.Now.Date
+                                            && DateTime.ParseExact(x.endDate, format, provider).Date >= DateTime.Now.Date).First();
         }
         #endregion
 
         private RootObject DeserializeJson()
         {
             RootObject items;
-            string path = @"D:\repos\Alexa\3-amazon-echo-developing-alexa-skills-m3-exercise-files\AlexaSkill\Scripts\Questions.json";
+            string path = @"C:\inetpub\api_sonictexture_root\Scripts\Questions.json";
 
             using (StreamReader r = File.OpenText(path))
             {
@@ -285,7 +311,7 @@ namespace AlexaSkill.Controllers
 
         private AlexaResponse CancelOrStopIntentHandler(AlexaRequest request)
         {
-            return new AlexaResponse("Thanks for listening, let's talk again soon.", true);
+            return new AlexaResponse("<speak>Thanks for listening, let's talk again soon.</speak>", true);
         }
 
         private AlexaResponse SessionEndedRequestHandler(Request request)
@@ -298,6 +324,15 @@ namespace AlexaSkill.Controllers
             Beginner,
             Intermdiate,
             Advanced
+        }
+
+        enum QuestionsIndexEnum
+        {
+            QuestionFive = 4,
+            QuestionFour = 3,
+            QuestionThree =2,
+            QuestionTwo =  1,
+            QuestionOne =  0
         }
 
     }

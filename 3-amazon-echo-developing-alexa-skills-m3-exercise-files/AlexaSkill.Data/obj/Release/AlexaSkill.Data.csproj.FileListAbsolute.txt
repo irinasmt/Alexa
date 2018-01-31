@@ -1,0 +1,12 @@
+D:\repos\Alexa\3-amazon-echo-developing-alexa-skills-m3-exercise-files\AlexaSkill.Data\bin\Release\AlexaSkill.Data.dll.config
+D:\repos\Alexa\3-amazon-echo-developing-alexa-skills-m3-exercise-files\AlexaSkill.Data\bin\Release\AlexaSkill.Data.dll
+D:\repos\Alexa\3-amazon-echo-developing-alexa-skills-m3-exercise-files\AlexaSkill.Data\bin\Release\AlexaSkill.Data.pdb
+D:\repos\Alexa\3-amazon-echo-developing-alexa-skills-m3-exercise-files\AlexaSkill.Data\bin\Release\EntityFramework.dll
+D:\repos\Alexa\3-amazon-echo-developing-alexa-skills-m3-exercise-files\AlexaSkill.Data\bin\Release\EntityFramework.SqlServer.dll
+D:\repos\Alexa\3-amazon-echo-developing-alexa-skills-m3-exercise-files\AlexaSkill.Data\bin\Release\Newtonsoft.Json.dll
+D:\repos\Alexa\3-amazon-echo-developing-alexa-skills-m3-exercise-files\AlexaSkill.Data\bin\Release\EntityFramework.xml
+D:\repos\Alexa\3-amazon-echo-developing-alexa-skills-m3-exercise-files\AlexaSkill.Data\bin\Release\EntityFramework.SqlServer.xml
+D:\repos\Alexa\3-amazon-echo-developing-alexa-skills-m3-exercise-files\AlexaSkill.Data\bin\Release\Newtonsoft.Json.xml
+D:\repos\Alexa\3-amazon-echo-developing-alexa-skills-m3-exercise-files\AlexaSkill.Data\obj\Release\AlexaSkill.Data.dll
+D:\repos\Alexa\3-amazon-echo-developing-alexa-skills-m3-exercise-files\AlexaSkill.Data\obj\Release\AlexaSkill.Data.pdb
+D:\repos\Alexa\3-amazon-echo-developing-alexa-skills-m3-exercise-files\AlexaSkill.Data\obj\Release\AlexaSkill.Data.csprojResolveAssemblyReference.cache

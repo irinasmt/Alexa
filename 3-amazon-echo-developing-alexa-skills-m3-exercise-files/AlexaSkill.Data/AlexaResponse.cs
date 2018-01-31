@@ -35,14 +35,7 @@ namespace AlexaSkill.Data
         {
             Response.ShouldEndSession = shouldEndSession;
 
-            if (shouldEndSession)
-            {
-                Response.Card.Content = outputSpeechText;
-            }
-            else
-            {
-                Response.Card = null;
-            }
+            Response.Card = null;
         }
 
         public AlexaResponse(string outputSpeechText, string cardContent)
@@ -118,7 +111,7 @@ namespace AlexaSkill.Data
                 public CardAttributes()
                 {
                     Type = "Simple";
-                    Title = "C# test. Another week another quesion.";
+                    Title = "C# test. Another week another question.";
                 }
             }
 
