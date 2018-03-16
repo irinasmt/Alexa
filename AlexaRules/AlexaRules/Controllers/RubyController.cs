@@ -10,7 +10,7 @@ namespace AlexaRules.Controllers
 {
     public class RubyController : ApiController
     {
-        private const string ApplicationID = "amzn1.ask.skill.c8bb7c6b-b5e9-435e-9042-0e9185321836";
+        
         private const string filePath = @"C:\RubyQuestions.json";
 
         [HttpPost, Route("api/alexa/ruby")]
