@@ -10,7 +10,7 @@ namespace AlexaRules.Controllers
 {
     public class CSharpController : ApiController
     {
-        private const string ApplicationID = "amzn1.ask.skill.9306ae18-b178-432f-b89f-0d22663b65af";
+        
         private const string filePath = @"C:\Questions.json";
 
         [HttpPost, Route("api/alexa")]
